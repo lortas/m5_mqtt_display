@@ -4,7 +4,7 @@
 #include "esp32-hal-gpio.h"
 #include "time.h"
 #include <MqttClient.h>
-#include "displaymqtt.h"
+#include "m5_mqtt_display.h"
 
 //#define VERBOSE 2
 
