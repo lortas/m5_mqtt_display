@@ -219,7 +219,9 @@ void display_error_and_shutdown(char* errormsg, unsigned int seconds) {
   }
   M5.M5Ink.clear();
   InkPageSprite.pushSprite();
+  delay(1000);  // Give M5 time to draw sprite
   M5.shutdown(seconds);
+  delay(2000);  // Just in case shutdown take a while
 }
 
 void getNtpTime() {
@@ -320,6 +322,7 @@ void shutdown(unsigned int seconds) {
      digitalWrite(1, LOW);
      digitalWrite(POWER_HOLD_PIN, LOW);
   }
+  delay(2000);  // Just in case shutdown take a while
 }
 
 void setup() {
@@ -330,13 +333,17 @@ void setup() {
   wait4Wifi();
   connect2MqttBroker();
   getNtpTime();
-  delay(200);
-  if( !M5.M5Ink.isInit()) {
+  int n=0;
+  while( !M5.M5Ink.isInit() ) {
+    delay(100);
+    n++;
+    if(n>20) {
 #ifdef VERBOSE
-    Serial.println("Ink Init faild");
+      Serial.println("Ink Init faild");
 #endif
-    M5.shutdown(300);
-    delay(2000); // Just in case shutdown take a while
+      M5.shutdown(300);
+      delay(2000); // Just in case shutdown take a while
+    }
   }
 }
 
@@ -360,6 +367,5 @@ void loop() {
   } else {
     delay(2000);
     shutdown(seconds);
-    delay(2000);  // Just in case shutdown take a while
   }
 }
