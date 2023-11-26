@@ -6,7 +6,7 @@
 #include <MqttClient.h>
 #include "m5_mqtt_display.h"
 
-#define VERBOSE 2
+//#define VERBOSE 2
 
 Ink_Sprite InkPageSprite(&M5.M5Ink);
 
