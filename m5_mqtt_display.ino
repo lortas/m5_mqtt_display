@@ -6,7 +6,7 @@
 #include <MqttClient.h>
 #include "m5_mqtt_display.h"
 
-//#define VERBOSE 2
+#define VERBOSE 2
 
 Ink_Sprite InkPageSprite(&M5.M5Ink);
 
@@ -330,11 +330,13 @@ void setup() {
   wait4Wifi();
   connect2MqttBroker();
   getNtpTime();
+  delay(200);
   if( !M5.M5Ink.isInit()) {
 #ifdef VERBOSE
     Serial.println("Ink Init faild");
 #endif
     M5.shutdown(300);
+    delay(2000); // Just in case shutdown take a while
   }
 }
 
@@ -350,9 +352,12 @@ void loop() {
   Serial.print(seconds);
   Serial.println(" seconds.");
 #endif
-  if(bat_low) M5.shutdown();
-  else if( seconds < 10 ) delay(seconds*1000);
-  else {
+  if(bat_low) {
+    M5.shutdown();
+    delay(2000); // Just in case shutdown take a while
+  } else if( seconds < 10 ) {
+    delay(seconds*1000);
+  } else {
     delay(2000);
     shutdown(seconds);
     delay(2000);  // Just in case shutdown take a while
