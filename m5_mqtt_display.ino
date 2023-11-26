@@ -47,12 +47,12 @@ void wait4Wifi() {
 #ifdef VERBOSE
     Serial.print(".");
 #endif
-    delay(1000);
     n++;
     if (n>20) {
       stopWifi();
       M5.shutdown(600);
     }
+    delay(1000);
   }
 #ifdef VERBOSE
   Serial.println("connected");
@@ -68,12 +68,18 @@ void connect2MqttBroker() {
 #endif
   mqttClient.setId(b_user);
   mqttClient.setUsernamePassword(b_user,b_pass);
-  if (!mqttClient.connect(broker, b_port)) {
+  int n=0;
+  while (!mqttClient.connect(broker, b_port)) {
+    n++;
+    if( n>20 ) {
 #ifdef VERBOSE
-    Serial.print("MQTT connection failed! Error code = ");
-    Serial.println(mqttClient.connectError());
+      Serial.print("MQTT connection failed! Error code = ");
+      Serial.println(mqttClient.connectError());
 #endif
-    M5.shutdown(60);
+      M5.shutdown(60);
+      delay(2000); // Just in case shutdown take a while
+    }
+    delay(100);
   }
 #ifdef VERBOSE
   Serial.println("connected");
@@ -335,7 +341,6 @@ void setup() {
   getNtpTime();
   int n=0;
   while( !M5.M5Ink.isInit() ) {
-    delay(100);
     n++;
     if(n>20) {
 #ifdef VERBOSE
@@ -344,6 +349,7 @@ void setup() {
       M5.shutdown(300);
       delay(2000); // Just in case shutdown take a while
     }
+    delay(100);
   }
 }
 
