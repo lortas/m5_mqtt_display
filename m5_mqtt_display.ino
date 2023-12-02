@@ -332,9 +332,9 @@ void shutdown(unsigned int seconds) {
 }
 
 void setup() {
+  M5.begin();
   Serial.begin(19200);
   connect2Wifi();
-  M5.begin();
   digitalWrite(LED_EXT_PIN,LOW);
   wait4Wifi();
   connect2MqttBroker();
