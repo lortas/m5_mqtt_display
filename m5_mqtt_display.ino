@@ -250,7 +250,8 @@ void display_error_and_shutdown(char* errormsg, unsigned int seconds) {
 #ifdef VERBOSE
     Serial.println("display_error_and_shutdown: done");
 #endif
-  M5.shutdown(seconds);
+  if( seconds<1 ) M5.shutdown();
+  else            M5.shutdown(seconds);
   delay(2000);  // Just in case shutdown take a while
 }
 
