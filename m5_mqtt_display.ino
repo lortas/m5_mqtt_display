@@ -199,8 +199,9 @@ void lines2Sprite() {
 }
 
 void display_error_and_shutdown(char* errormsg, unsigned int seconds) {
-  unsigned int len=strlen(errormsg);
-  unsigned int line_len;
+  InkPageSprite.creatSprite(0,0,200,200,true);
+  size_t len=strlen(errormsg);
+  size_t line_len;
   unsigned int line_high;
   unsigned int max_lines;
   Ink_eSPI_font_t* font;
@@ -215,17 +216,40 @@ void display_error_and_shutdown(char* errormsg, unsigned int seconds) {
     font=&AsciiFont8x16;
     line_high=16;
   }
+#ifdef VERBOSE
+    Serial.println("display_error_and_shutdown called.");
+#endif
+#if VERBOSE > 1
+    Serial.print("message : ");       Serial.println(errormsg);
+    Serial.print("shutdown time : "); Serial.println(seconds);
+    Serial.print("msg  len  : ");     Serial.println(len);
+    Serial.print("line len  : ");     Serial.println(line_len);
+    Serial.print("line high : ");     Serial.println(line_high);
+    Serial.print("lines max : ");     Serial.println(max_lines);
+#endif
   char line[line_len+1]; line[line_len]=0;
-  for( unsigned int line_step=0; line_step++; line_step<4 ) {
+  for( unsigned int line_step=0; line_step<max_lines; line_step++ ) {
     unsigned int pos=line_step*line_len;
-    if( len > pos ) {
-      strncpy(line,errormsg+pos,line_len);
+    int max_chars=len-pos;
+#if VERBOSE > 1
+    Serial.print("pos       : "); Serial.println(pos);
+    Serial.print("max_chars : "); Serial.println(max_chars);
+#endif
+    if( max_chars > 0 ) {
+      strncpy(line,&errormsg[pos],line_len);
+#ifdef VERBOSE
+    Serial.print("display_error_and_shutdown: ");
+    Serial.println(line);
+#endif
       InkPageSprite.drawString(0,line_high*line_step,line,font);
     }
   }
   M5.M5Ink.clear();
   InkPageSprite.pushSprite();
   delay(1000);  // Give M5 time to draw sprite
+#ifdef VERBOSE
+    Serial.println("display_error_and_shutdown: done");
+#endif
   M5.shutdown(seconds);
   delay(2000);  // Just in case shutdown take a while
 }
