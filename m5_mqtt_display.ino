@@ -50,7 +50,7 @@ void wait4Wifi() {
     n++;
     if (n>20) {
       stopWifi();
-      M5.shutdown(600);
+      display_error_and_shutdown("Can't connect to WiFi",600);
     }
     delay(1000);
   }
@@ -76,8 +76,7 @@ void connect2MqttBroker() {
       Serial.print("MQTT connection failed! Error code = ");
       Serial.println(mqttClient.connectError());
 #endif
-      M5.shutdown(60);
-      delay(2000); // Just in case shutdown take a while
+      display_error_and_shutdown("Can't connect to MQTT server",60);
     }
     delay(100);
   }
@@ -391,8 +390,7 @@ void loop() {
   Serial.println(" seconds.");
 #endif
   if(bat_low) {
-    M5.shutdown();
-    delay(2000); // Just in case shutdown take a while
+    display_error_and_shutdown("Battery empty",0);
   } else if( seconds < 10 ) {
     delay(seconds*1000);
   } else {
