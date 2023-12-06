@@ -249,9 +249,13 @@ void display_error_and_shutdown(char* errormsg, unsigned int seconds) {
 #ifdef VERBOSE
     Serial.println("display_error_and_shutdown: done");
 #endif
-  if( seconds<1 ) M5.shutdown();
-  else            M5.shutdown(seconds);
-  delay(2000);  // Just in case shutdown take a while
+  if( seconds<1 ) {
+    M5.shutdown();
+    delay(2000);  // Just in case shutdown take a while
+  } else {
+    M5.shutdown(seconds);
+    delay(seconds*1000); // Just in case shutdown take a while
+  }
 }
 
 void getNtpTime() {
@@ -352,7 +356,7 @@ void shutdown(unsigned int seconds) {
      digitalWrite(1, LOW);
      digitalWrite(POWER_HOLD_PIN, LOW);
   }
-  delay(2000);  // Just in case shutdown take a while
+  delay(seconds*1000);  // Just in case power off take a while
 }
 
 void setup() {
@@ -371,7 +375,7 @@ void setup() {
       Serial.println("Ink Init faild");
 #endif
       M5.shutdown(300);
-      delay(2000); // Just in case shutdown take a while
+      delay(300*1000); // Just in case shutdown take a while
     }
     delay(100);
   }
