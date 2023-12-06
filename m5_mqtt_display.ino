@@ -156,7 +156,7 @@ void lines2Sprite() {
 #ifdef VERBOSE
     Serial.println("Ink Sprite create faild");
 #endif
-    return;
+    shutdown(60);
   }
   for( int l=0; l < 4; l++ ) {
     const char* line3=lines[l+4];
@@ -374,8 +374,7 @@ void setup() {
 #ifdef VERBOSE
       Serial.println("Ink Init faild");
 #endif
-      M5.shutdown(300);
-      delay(300*1000); // Just in case shutdown take a while
+      shutdown(60);
     }
     delay(100);
   }
