@@ -78,7 +78,7 @@ void connect2MqttBroker() {
 #endif
       display_error_and_shutdown("Can't connect to MQTT server",60);
     }
-    delay(100);
+    delay(100); // retry in 100ms
   }
 #ifdef VERBOSE
   Serial.println("connected");
@@ -152,11 +152,16 @@ void getBatVoltage() {
 }
 
 void lines2Sprite() {
-  if( InkPageSprite.creatSprite(0,0,200,200,true) != 0) {
+  int n=0;
+  while( InkPageSprite.creatSprite(0,0,200,200,true) != 0 ) {
+    n++;
+    if(n>20) {
 #ifdef VERBOSE
     Serial.println("Ink Sprite create faild");
 #endif
     shutdown(60);
+    }
+    delay(100); // retry in 100ms
   }
   for( int l=0; l < 4; l++ ) {
     const char* line3=lines[l+4];
@@ -198,7 +203,21 @@ void lines2Sprite() {
 }
 
 void display_error_and_shutdown(char* errormsg, unsigned int seconds) {
-  InkPageSprite.creatSprite(0,0,200,200,true);
+#ifdef VERBOSE
+    Serial.println("display_error_and_shutdown called.");
+    Serial.print("message : ");       Serial.println(errormsg);
+#endif
+  int n=0;
+  while( InkPageSprite.creatSprite(0,0,200,200,true) != 0 ) {
+    n++;
+    if(n>20) {
+#ifdef VERBOSE
+      Serial.println("Creation of InkSprite failed.");
+#endif
+      shutdown(seconds);
+    }
+    delay(100); // retry in 100ms
+  }
   size_t len=strlen(errormsg);
   size_t line_len;
   unsigned int line_high;
@@ -215,11 +234,7 @@ void display_error_and_shutdown(char* errormsg, unsigned int seconds) {
     font=&AsciiFont8x16;
     line_high=16;
   }
-#ifdef VERBOSE
-    Serial.println("display_error_and_shutdown called.");
-#endif
 #if VERBOSE > 1
-    Serial.print("message : ");       Serial.println(errormsg);
     Serial.print("shutdown time : "); Serial.println(seconds);
     Serial.print("msg  len  : ");     Serial.println(len);
     Serial.print("line len  : ");     Serial.println(line_len);
